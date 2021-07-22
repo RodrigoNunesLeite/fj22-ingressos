@@ -2,16 +2,44 @@ package br.com.caelum.ingresso.model;
 
 import java.math.BigDecimal;
 
-import br.com.caelum.ingresso.model.descontos.Desconto;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
+@Entity
 public class Ingresso {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	
+	// Muitos ingressos para uma sessao
+	@ManyToOne
 	private Sessao sessao;
+	
+	@ManyToOne
+	private Lugar lugar;
+	
 	private BigDecimal preco = BigDecimal.ZERO;
 	
-	public Ingresso(Sessao sessao, Desconto tipoDeDesconto) {
-		this.setSessao(sessao);
-		this.preco = tipoDeDesconto.aplicarDescontoSobre(sessao.getPreco());
+	@Enumerated(EnumType.STRING) // Aqui salva o nome do enum, se nao for.string salva o id do enum
+	private TipoDeIngresso tipoDeIngresso;
+	
+	public Ingresso(Sessao sessao, TipoDeIngresso tipoDeIngresso, Lugar lugar) {
+		this.sessao = sessao;
+		this.tipoDeIngresso = tipoDeIngresso;
+		this.preco = this.tipoDeIngresso.aplicaDesconto(sessao.getPreco());
+		this.lugar = lugar;
 	}
+	
+	public Ingresso() {
+		
+	}
+	
 	public BigDecimal getPreco() {
 		return preco;
 	}
@@ -24,6 +52,18 @@ public class Ingresso {
 	}
 	public void setSessao(Sessao sessao) {
 		this.sessao = sessao;
+	}
+	public Lugar getLugar() {
+		return lugar;
+	}
+	public void setLugar(Lugar lugar) {
+		this.lugar = lugar;
+	}
+	public TipoDeIngresso getTipoDeIngresso() {
+		return tipoDeIngresso;
+	}
+	public void setTipoDeIngresso(TipoDeIngresso tipoDeIngresso) {
+		this.tipoDeIngresso = tipoDeIngresso;
 	}
 	
 	
